@@ -1,0 +1,31 @@
+{
+  "containers": [
+    {
+      "name": "app01",
+      "domain": "",
+      "ip": ""
+    }
+  ],
+  "config": {
+    "app01": {
+      "dockerfilePath": "Dockerfile",
+      "buildDir": "",
+      "containerPort": 80,
+      "envParams": {
+        "MYSQL_ADDRESS": "10.15.107.131:3306",
+        "MYSQL_USERNAME": "root",
+        "MYSQL_PASSWORD": "ynX3sDE6"
+      },
+      "cpu": 0.5,
+      "mem": 1,
+      "policyType": "cpu",
+      "policyThreshold": 60,
+      "customLogs": "stdout",
+      "initialDelaySeconds": 2,
+      "minNum": 0,
+      "maxNum": 50,
+      "remark": ""
+    }
+  }
+}
+
