@@ -108,6 +108,7 @@ def query_user_info(openid=None, uid=None, user_name=None):
     :return: 包含查询结果的列表
     """
     try:
+        res = []
         # 构建查询条件
         query = UserInfo.query
         
@@ -120,9 +121,9 @@ def query_user_info(openid=None, uid=None, user_name=None):
         
         # 执行查询并获取结果
         results = query.all()
-        
+        res.extend(results)
         # 返回结果列表
-        return results
+        return res
     except Exception as e:
         logger.info("查询用户信息时发生错误: {}".format(e))
         return []
