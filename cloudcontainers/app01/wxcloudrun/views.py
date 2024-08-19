@@ -5,6 +5,7 @@ from wxcloudrun.dao import *
 from wxcloudrun.model import *
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
 
+import wxcloudrun.dao as dao
 
 @app.route('/')
 def index():
@@ -78,19 +79,19 @@ def insert_new_user():
     try:
         # 获取请求体参数
         params = request.get_json()
-
-        # 检查必需的参数
-        if 'openid' not in params:
+        if params is None:
+            params = {}
+        if not 'openid' in params:
             return make_err_response('缺少openid参数')
-
         # 从请求体中提取参数
-        openid = params['openid']
-        session_key = params.get('session_key')
-        user_name = params.get('user_name')
-        nick_name = params.get('nick_name')
-        profile_picture = params.get('profile_picture')
-
-        uid = insert_new_user(openid=openid, session_key=session_key, user_name=user_name,
+        openid = params.get('openid')
+        session_key = params.get('session_key', '')
+        user_name = params.get('user_name', '')
+        nick_name = params.get('nick_name', '')
+        profile_picture = params.get('profile_picture', '')
+        
+        # print(openid, session_key, user_name, nick_name, profile_picture)
+        uid = dao.insert_or_update_user(openid=openid, session_key=session_key, user_name=user_name,
                         nick_name=nick_name, profile_picture=profile_picture)
 
         # 返回新用户的 uid
@@ -107,6 +108,8 @@ def api_query_user_info():
     try:
         # 获取请求体参数
         params = request.get_json()
+        if params is None:
+            params = {}
 
         # 提取查询参数
         openid = params.get('openid')
@@ -114,7 +117,7 @@ def api_query_user_info():
         user_name = params.get('user_name')
 
         # 调用 query_user_info 函数查询用户信息
-        results = query_user_info(openid=openid, uid=uid, user_name=user_name)
+        results = dao.query_user_info(openid=openid, uid=uid, user_name=user_name)
 
         # 将查询结果转换为字典列表
         result_list = [{'uid': r.uid, 'openid': r.openid, 'session_key': r.session_key,
@@ -125,3 +128,6 @@ def api_query_user_info():
         return make_succ_response(result_list)
     except Exception as e:
         return make_err_response('查询用户信息时发生错误: {}'.format(str(e)))
+    
+
+

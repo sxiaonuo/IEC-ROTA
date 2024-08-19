@@ -68,9 +68,9 @@ def update_counterbyid(counter):
 
 # 用户信息
 
-def insert_new_user(openid, session_key=None, user_name=None, nick_name=None, profile_picture=None):
+def insert_or_update_user(openid, session_key=None, user_name=None, nick_name=None, profile_picture=None):
     """
-    插入新的用户信息到数据库。
+    插入或更新用户信息到数据库。
     
     :param openid: 用户的openid，必须提供
     :param session_key: 会话密钥，可选
@@ -79,23 +79,39 @@ def insert_new_user(openid, session_key=None, user_name=None, nick_name=None, pr
     :param profile_picture: 头像链接，可选
     """
     try:
-        # 创建一个新的 UserInfo 实例
-        new_user = UserInfo(
-            openid=openid,
-            session_key=session_key,
-            user_name=user_name,
-            nick_name=nick_name,
-            profile_picture=profile_picture
-        )
-        
-        # 添加新用户到数据库会话
-        db.session.add(new_user)
-        # 提交更改以保存到数据库
-        db.session.commit()
-        # 返回新用户的 uid
-        return new_user.uid
-    except OperationalError as e:
-        logger.info("新增新用户 errorMsg= {} ".format(e))
+        # 查询数据库中是否已存在该 openid 的用户
+        existing_user = UserInfo.query.filter_by(openid=openid).first()
+
+        if existing_user:
+            # 如果用户已存在，则更新其信息
+            existing_user.session_key = session_key
+            existing_user.user_name = user_name
+            existing_user.nick_name = nick_name
+            existing_user.profile_picture = profile_picture
+            
+            # 提交更改以保存到数据库
+            db.session.commit()
+            
+            return existing_user.uid
+        else:
+            # 如果用户不存在，则创建一个新用户
+            new_user = UserInfo(
+                openid=openid,
+                session_key=session_key,
+                user_name=user_name,
+                nick_name=nick_name,
+                profile_picture=profile_picture
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            
+            return new_user.uid
+    except IntegrityError as e:
+        db.session.rollback()  # 回滚事务
+        logger.error("Database integrity error when inserting/updating user: {}".format(e))
+    except Exception as e:
+        db.session.rollback()  # 回滚事务
+        logger.error("Error when inserting/updating user: {}".format(e))
 
 
 def query_user_info(openid=None, uid=None, user_name=None):
@@ -107,6 +123,7 @@ def query_user_info(openid=None, uid=None, user_name=None):
     :param user_name: 用户名，可选
     :return: 包含查询结果的列表
     """
+    print(openid, uid, user_name)
     try:
         res = []
         # 构建查询条件
@@ -122,6 +139,7 @@ def query_user_info(openid=None, uid=None, user_name=None):
         # 执行查询并获取结果
         results = query.all()
         res.extend(results)
+        print(res)
         # 返回结果列表
         return res
     except Exception as e:

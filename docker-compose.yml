@@ -1,0 +1,27 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+    volumes:
+      - .:/app
+    ports:
+      - '27081:80'
+    container_name: wxcloud_app01
+    labels:
+      - wxPort=27082
+      - hostPort=27081
+      - wxcloud=app01
+      - role=container
+    environment:
+      - MYSQL_USERNAME=
+      - MYSQL_PASSWORD=
+      - MYSQL_ADDRESS=
+      - MYSQL_ADDRESS=10.15.107.131:3306
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=ynX3sDE6
+networks:
+  default:
+    external:
+      name: wxcb0

@@ -23,11 +23,12 @@ class UserInfo(db.Model):
     uid = db.Column(db.Integer, primary_key=True, autoincrement=True)  # 自增长的主键
     openid = db.Column(db.String(100), unique=True, nullable=False)  # OpenID，唯一
     session_key = db.Column(db.String(100), nullable=True)  # Session key
-    user_name = db.Column(db.String(50), nullable=True)  # 用户名
-    nick_name = db.Column(db.String(50), nullable=True)  # 昵称
-    profile_picture = db.Column(db.String(200), nullable=True)  # 头像链接
-    created_at = db.Column('createdAt', db.TIMESTAMP, nullable=False, default=datetime.now())
-    updated_at = db.Column('updatedAt', db.TIMESTAMP, nullable=False, default=datetime.now(), onupdate=datetime.now())
+    user_name = db.Column(db.String(100), nullable=True)  # 用户名
+    nick_name = db.Column(db.String(100), nullable=True)  # 昵称
+    profile_picture = db.Column(db.String(100), nullable=True)  # 头像链接
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
+    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now(), onupdate=datetime.now())
 
     def __repr__(self):
         return f'<UserInfo {self.uid}>'
+    

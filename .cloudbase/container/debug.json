@@ -3,7 +3,8 @@
     {
       "name": "app01",
       "domain": "",
-      "ip": ""
+      "ip": "",
+      "containerId": "400e286eaf1a746095a419d0187087e07962306af4821addc52ef3b6ee937336"
     }
   ],
   "config": {
